@@ -233,12 +233,84 @@ As part of a larger examination of how various factors contribute to student ach
 */ 
 global election "$wd\week_05\03_assignment\01_data\q4_Tz_election_2010_raw.xls"
 global template "$wd\week_05\03_assignment\01_data\q4_Tz_election_template.dta"
-use "$template", clear
+//use "$template", clear
 clear
-import excel using "$election", sheet("Sheet1") firstrow clear
+import excel using "$election", clear
+//import excel using "$election", sheet("Sheet1") firstrow clear
+rename A REGION
+rename B district
+rename C costituency
+rename D Ward 
+rename E CandidateName
+rename F Sex
+rename H party
+rename I votes
+rename J Elected
+drop K G
+drop if CandidateName ==""
+drop if CandidateName == "CANDIDATE NAME"
+replace Sex = "F" if Sex ==""
+replace Elected = "NOT ELECTED" if Elected ==""
+
+//populating each empty region/ward until hits differently one
+replace REGION = REGION[_n-1] if REGION == ""
+replace district = district[_n-1] if district == ""
+replace costituency = costituency[_n-1] if costituency == ""
+replace Ward = Ward[_n-1] if Ward == ""
+
+egen ward_id = group(REGION district Ward)
+bysort ward_id: gen candidate_num = _n
+bysort ward_id: egen total_candidates = max(candidate_num)
+fillin party ward_id
+gsort ward_id -REGION
+
+replace REGION = REGION[_n-1] if REGION == ""
+replace district = district[_n-1] if district == ""
+replace costituency = costituency[_n-1] if costituency == ""
+replace Ward = Ward[_n-1] if Ward == ""
+
+replace votes = "0" if votes == "UN OPPOSSED"
+destring votes, gen(Votes)
+drop votes
+rename Votes votes  
+
+bysort ward_id: gen rank = _n
+drop _fillin CandidateName Sex Elected candidate_num
+sort ward_i party
+
+reshape wide party total_candidates votes, i(ward_id) j(rank)
+egen totalvotes = rowtotal(votes*)
 
 
+local parties AFP APPT_MAENDELEO CCM CHADEMA CHAUSTA CUF DP JAHAZIASILIA MAKIN NCCRMAGEUZI NLD NRA SAU TADEA TLP UDP UMD UPDP
 
+foreach p of local parties {
+    gen votes`p' = .
+}
+
+forvalues i=1/18 {
+	replace votesAFP = votes`i' if party`i' == "AFP"
+	replace votesAPPT_MAENDELEO = votes`i' if party`i' == "APPT - MAENDELEO"
+	replace votesCCM = votes`i' if party`i' == "CCM"
+	replace votesCHADEMA = votes`i' if party`i' == "CHADEMA"
+	replace votesCHAUSTA = votes`i' if party`i' == "CHAUSTA"
+	replace votesCUF = votes`i' if party`i' == "CUF"
+	replace votesDP = votes`i' if party`i' == "DP"
+	replace votesJAHAZIASILIA = votes`i' if party`i' == "JAHAZI ASILIA"
+	replace votesMAKIN = votes`i' if party`i' == "MAKIN"
+	replace votesNCCRMAGEUZI = votes`i' if party`i' == "NCCR-MAGEUZI"
+	replace votesNLD = votes`i' if party`i' == "NLD"
+	replace votesNRA = votes`i' if party`i' == "NRA"
+	replace votesSAU = votes`i' if party`i' == "SAU"
+	replace votesTADEA = votes`i' if party`i' == "TADEA"
+	replace votesTLP = votes`i' if party`i' == "TLP"
+	replace votesUDP = votes`i' if party`i' ==  "UDP"
+	replace votesUMD = votes`i' if party`i' == "UMD"
+	replace votesUPDP = votes`i' if party`i' == "UPDP"	
+}
+
+drop total_candidates* 
+drop party* votes*
 
 /*******************************************************************************
 Question 5.
@@ -250,7 +322,22 @@ As part of a larger examination of how various factors contribute to student ach
 clear
 global psle "$wd\week_05\03_assignment\01_data\q5_psle_2020_data.dta"
 global location "$wd\week_05\03_assignment\01_data\q5_school_location.dta"
-use "$psle", clear
 
-use "$location", clear
+* Process first dataset
+
+tempfile data_location
+use "$location", clear 
+rename NECTACentreNo school_center
+drop if school_center == "n/a" 
+duplicates drop school_center, force
+save `data_location'
  
+use "$psle", clear 
+//parsing school code address
+split school_code_address, parse(_)
+split school_code_address2, parse(.) 
+replace school_code_address21 = strupper(school_code_address21)
+rename school_code_address21 school_center 
+drop school_code_address22 school_code_address2 school_code_address1
+merge 1:1 school_center using `data_location'
+drop if _merge==2
