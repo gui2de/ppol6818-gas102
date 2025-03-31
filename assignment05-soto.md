@@ -24,6 +24,7 @@ We have draw a sample randomly of size N from a fixed population. After running 
 | 10,000          | 9.92      | 0.19     | 9.53           | 10.31          |
 
 For the above results, please see file summary_p1
+
 ---
 
 ## Interpretation of beta Estimates
@@ -137,6 +138,7 @@ It is related to the above, as we are sampling from a different population each 
 
 
 For the above results, please see file comparison_summary
+
 ---
 
 ## Graphs for comparison
