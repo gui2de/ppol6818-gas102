@@ -40,6 +40,7 @@ For the above results, please see the following file. [Click here, Graph of the 
 ## Objective of the section
 
 We are exploring how the reuslts of a regression would come up, when we get samples from an infinite population. Every time we are extracting a new sample, of different sizes, create a regression and see how the beta changes across each sizes, but in this case is an infinite population.
+
 ---
 
 ## Analysis
