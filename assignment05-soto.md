@@ -82,6 +82,7 @@ We have draw a sample randomly of size N from an infinite population. After runn
 
 
 For the above results, please see file summary_p2
+
 ---
 
 ## Interpretation of beta Estimates of part2
