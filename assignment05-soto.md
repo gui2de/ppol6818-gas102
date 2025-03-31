@@ -86,7 +86,7 @@ For the above results, please see file summary_p2
 
 As the sample is smaller, in this scenario, the results are widely different form the above. In this case, they are not close to useful as they are varying a lot, without patterns. Now, as the sample gets larger, as happened above in part1, the estiamtes are getting closer to 10, the true beta. Standard error gets smaller and reliable and the confidence intervals get closer. With this we can conclude that always smaller samples will be noisier, as bigger the sample, the more accurate our betas (closer to true effect). Something to point out from the infinite populaiton to the fixed one, is that this populaiton gives more flexibility than the first one. 
 
-For the above results, please see the following file. [Click here, Graph of the standard error](graph_beta2.pdf)
+For the above results, please see the following file. [Click here, Graph of betas](graph_beta2.pdf)
 
 ---
 
